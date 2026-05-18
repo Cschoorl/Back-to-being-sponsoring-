@@ -1,0 +1,2728 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Back to Being: De wereld als ons kantoor</title>
+  <link rel="icon" href="assets/brand/logo-lockup-darkbg.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* Back to Being brand (CANVAS / TREE / GRASS / SKY / CREEK / SAND / CHARCOAL) */
+    :root {
+      --sand:      #B9A26E;
+      --tree:      #2A3723;
+      --grass:     #97A081;
+      --sky:       #A7BDD5;
+      --creek:     #424D69;
+      --canvas:    #FFFFF1;
+      --charcoal:  #161616;
+
+      --bg:         var(--canvas);
+      --bg-dark:    var(--tree);
+      --ink:        var(--charcoal);
+      --ink-soft:   #4d4d48;
+      --line:       rgba(42, 55, 35, 0.14);
+      --line-dark:  rgba(167, 189, 213, 0.22);
+      --accent:     var(--creek);
+      --accent-2:   var(--grass);
+      --green:      var(--tree);
+      --green-soft: #1f2918;
+      --green-light: var(--grass);
+      --cream:      var(--canvas);
+
+      --font-head:   "Instrument Serif", Georgia, "Times New Roman", serif;
+      --font-sub:    "Inter Tight", "Inter", -apple-system, sans-serif;
+      --font-body:   "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+      /* Gelijke linker/rechter inset + topbar-ruimte op alle slides */
+      --slide-pad-x: clamp(1.5rem, 6.25vw, 5rem);
+      --slide-pad-top: 8vh;
+      --slide-pad-bottom: 11vh;
+      --topbar-margin-bottom: clamp(3vh, 4.25vw, 4.75vh);
+      --lang-bar-height: 2.5rem;
+    }
+
+    /* Taal: NL standaard; .lang-en zichtbaar op html.lang-en */
+    html:not(.lang-en) .lang-en {
+      display: none !important;
+    }
+
+    html.lang-en .lang-nl {
+      display: none !important;
+    }
+
+    .lang-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 3000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      height: var(--lang-bar-height);
+      padding: 0 1rem;
+      background: rgba(255, 255, 241, 0.95);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .lang-bar .lang-bar-label {
+      font-family: var(--font-sub);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    .lang-segment {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem;
+      border-radius: 100px;
+      border: 1.5px solid var(--line);
+      background: rgba(167, 189, 213, 0.12);
+      gap: 0.15rem;
+    }
+
+    .lang-segment button {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-sub);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.85rem;
+      border-radius: 100px;
+      color: var(--ink-soft);
+      background: transparent;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .lang-segment button[aria-pressed="true"] {
+      background: var(--tree);
+      color: var(--canvas);
+    }
+
+    .lang-segment button:focus-visible {
+      outline: 2px solid var(--creek);
+      outline-offset: 2px;
+    }
+
+    /* ---------- Opening preloader (Lottie, boven lang-bar tijdens laden) ---------- */
+    .preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      box-sizing: border-box;
+      background: var(--canvas);
+      transition: opacity 0.55s ease, visibility 0.55s ease;
+    }
+
+    .preloader.preloader--done {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .preloader-lottie {
+      width: min(92vw, 960px);
+      max-height: min(78vh, 540px);
+    }
+
+    .preloader-lottie svg {
+      width: 100% !important;
+      height: auto !important;
+      display: block;
+    }
+
+    .i18n-block {
+      display: block;
+    }
+
+    .headline .lang-nl,
+    .headline .lang-en,
+    .closer-title .lang-nl,
+    .closer-title .lang-en {
+      display: block;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      background: var(--charcoal);
+      font-family: var(--font-body);
+      color: var(--ink);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: calc(var(--slide-pad-top) + var(--lang-bar-height)) var(--slide-pad-x) var(--slide-pad-bottom);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+      pointer-events: none;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* ---------- Top bar ---------- */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      align-self: stretch;
+      width: 100%;
+      margin-bottom: var(--topbar-margin-bottom);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      font-family: var(--font-sub);
+      font-weight: 500;
+      font-size: 0.88rem;
+      letter-spacing: 0.06em;
+      text-transform: lowercase;
+      color: var(--ink);
+    }
+
+    .logo-img {
+      display: block;
+      height: clamp(46px, 5.65vh, 64px);
+      width: auto;
+      max-width: min(310px, 64vw);
+      object-fit: contain;
+      flex-shrink: 0;
+      border-radius: 10px;
+    }
+
+    .slide.dark .logo-img {
+      box-shadow: 0 0 0 1px rgba(167, 189, 213, 0.12);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-family: var(--font-sub);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    /* ---------- Pill tag ---------- */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.45rem 1rem;
+      border: 1.5px solid var(--grass);
+      color: var(--tree);
+      border-radius: 100px;
+      font-family: var(--font-sub);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      background: rgba(151, 160, 129, 0.12);
+      align-self: flex-start;
+      margin-bottom: 1.5rem;
+    }
+
+    .pill::before {
+      content: "";
+      display: inline-block;
+      width: 0.55rem;
+      height: 0.4rem;
+      margin-right: 0.45rem;
+      background: var(--sand);
+      clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+      flex-shrink: 0;
+    }
+
+    .pill.dark { border-color: rgba(151, 160, 129, 0.45); color: var(--sky); background: rgba(22, 22, 22, 0.35); }
+
+    /* ---------- Headlines ---------- */
+    .headline {
+      font-family: var(--font-head);
+      font-weight: 400;
+      font-size: clamp(2.2rem, 4.2vw, 4.4rem);
+      line-height: 1.04;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      max-width: 22ch;
+      margin-bottom: 1.25rem;
+    }
+
+    .headline em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--creek);
+    }
+
+    .slide.dark .headline { color: var(--cream); }
+    .slide.dark .headline em { color: var(--sky); }
+
+    .lede {
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: clamp(1rem, 1.15vw, 1.15rem);
+      line-height: 1.55;
+      color: var(--ink-soft);
+      max-width: 56ch;
+      margin-bottom: 3vh;
+    }
+
+    .slide.dark .lede { color: rgba(247, 245, 240, 0.7); }
+
+    /* ---------- Slide 1: COVER (zelfde crème als rest van het deck) ---------- */
+    .slide.cover {
+      justify-content: space-between;
+      background: var(--canvas);
+      color: var(--charcoal);
+    }
+
+    .cover-headline {
+      font-family: var(--font-head);
+      font-weight: 400;
+      font-size: clamp(3rem, 8.5vw, 9.5rem);
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin: auto 0 0;
+    }
+
+    .slide.cover .cover-headline em {
+      color: var(--tree);
+    }
+
+    .cover-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 2vw;
+      padding-top: 2.5vh;
+      border-top: 1px solid rgba(42, 55, 35, 0.18);
+      margin-top: 6vh;
+    }
+
+    .cover-foot-partners {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.55rem;
+      flex-shrink: 0;
+      max-width: min(24rem, 46vw);
+    }
+
+    .cover-foot-partners-kicker {
+      font-family: var(--font-sub);
+      font-size: clamp(0.72rem, 0.95vw, 0.82rem);
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--tree);
+      margin: 0;
+      text-align: right;
+      width: 100%;
+    }
+
+    .cover-foot-logos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+      align-content: flex-end;
+      gap: clamp(0.55rem, 1.5vw, 1rem);
+      row-gap: 0.5rem;
+      width: 100%;
+    }
+
+    .cover-foot-logos img {
+      display: block;
+      height: clamp(17px, 2.1vh, 24px);
+      width: auto;
+      max-width: min(4.75rem, 18vw);
+      object-fit: contain;
+      opacity: 0.95;
+    }
+
+    .cover-foot-logos a {
+      display: flex;
+      align-items: center;
+      line-height: 0;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+
+    .cover-foot-logos a:hover img {
+      opacity: 1;
+      filter: brightness(0.94);
+    }
+
+    .cover-foot-logos a:focus-visible {
+      outline: 2px solid var(--creek);
+      outline-offset: 3px;
+    }
+
+    .cover-tagline {
+      font-family: var(--font-sub);
+      font-style: normal;
+      font-weight: 400;
+      font-size: clamp(1.05rem, 1.42vw, 1.38rem);
+      color: var(--ink-soft);
+      max-width: min(62ch, 90vw);
+      line-height: 1.55;
+      letter-spacing: 0.01em;
+    }
+
+    .cover-tagline-accent {
+      display: inline;
+      color: var(--tree);
+      font-weight: 600;
+    }
+
+    /* ---------- Generic line-divided list (used on slides 2,3,5,6) ---------- */
+    .rows {
+      display: flex;
+      flex-direction: column;
+      margin-top: auto;
+      border-top: 1px solid var(--line);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 60px 1fr auto;
+      gap: 2.5rem;
+      padding: 1.05rem 0;
+      border-bottom: 1px solid var(--line);
+      align-items: baseline;
+    }
+
+    .row .row-num {
+      font-family: var(--font-sub);
+      font-style: normal;
+      font-weight: 600;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--grass);
+    }
+
+    .row .row-title {
+      font-family: var(--font-head);
+      font-weight: 400;
+      font-size: clamp(1.15rem, 1.5vw, 1.45rem);
+      color: var(--ink);
+      line-height: 1.25;
+    }
+
+    .row .row-detail {
+      font-size: clamp(0.9rem, 1.05vw, 1.05rem);
+      color: var(--ink-soft);
+      line-height: 1.5;
+      max-width: 56ch;
+      text-align: right;
+    }
+
+    .row .row-detail strong {
+      color: var(--creek);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .row-tag {
+      display: inline-block;
+      margin-left: 0.6rem;
+      padding: 0.18rem 0.55rem;
+      border: 1px solid var(--grass);
+      color: var(--tree);
+      border-radius: 100px;
+      font-family: var(--font-sub);
+      font-style: normal;
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      vertical-align: middle;
+      transform: translateY(-2px);
+    }
+
+    .rows-tight { margin-top: 0; }
+
+    /* dark variant */
+    .slide.dark .rows { border-top-color: var(--line-dark); }
+    .slide.dark .row { border-bottom-color: var(--line-dark); }
+    .slide.dark .row .row-num { color: var(--green-light); }
+    .slide.dark .row .row-title { color: var(--cream); }
+    .slide.dark .row .row-detail { color: rgba(247, 245, 240, 0.7); }
+    .slide.dark .row-tag { border-color: rgba(151, 160, 129, 0.55); color: var(--sky); }
+
+    /* ---------- Slide 4: vision bullets (clean) ---------- */
+    .vision-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      margin-top: auto;
+      border-top: 1px solid var(--line);
+    }
+
+    .vision-list li {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 2rem;
+      padding: 1.15rem 0;
+      border-bottom: 1px solid var(--line);
+      align-items: baseline;
+    }
+
+    .vision-list .num {
+      font-family: var(--font-head);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 0.95rem;
+      color: var(--grass);
+      letter-spacing: 0.05em;
+    }
+
+    .vision-list .text {
+      font-family: var(--font-head);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(1.15rem, 1.55vw, 1.55rem);
+      line-height: 1.4;
+      color: var(--ink);
+      max-width: 70ch;
+    }
+
+    /* ---------- Verhaal in kader (filosofie / doel) ---------- */
+    .story-frame {
+      margin-top: auto;
+      align-self: stretch;
+      max-width: 58ch;
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
+      padding: clamp(1.35rem, 2.8vw, 2.15rem) clamp(1.5rem, 3vw, 2.5rem);
+      background: rgba(167, 189, 213, 0.22);
+      box-shadow: 0 1px 0 rgba(42, 55, 35, 0.06);
+    }
+
+    .story-frame p {
+      font-family: var(--font-head);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(1.05rem, 1.35vw, 1.28rem);
+      line-height: 1.58;
+      color: var(--ink);
+      margin-bottom: 1rem;
+    }
+
+    .story-frame p:last-child {
+      margin-bottom: 0;
+    }
+
+    .story-frame strong {
+      font-style: normal;
+      font-weight: 500;
+      color: var(--tree);
+    }
+
+    .slide.cover .topbar {
+      justify-content: space-between;
+    }
+
+    /* Grotere, ruimtelijker gebruikte content (feedback pitch) */
+    .slide.slide--center {
+      align-items: center;
+    }
+
+    .slide.slide--center .topbar {
+      align-self: stretch;
+      width: 100%;
+    }
+
+    .slide.slide--center .pill {
+      align-self: center;
+    }
+
+    .slide.slide--center .headline {
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 24ch;
+    }
+
+    .slide.slide--center .story-frame {
+      margin-top: 2vh;
+      max-width: min(72ch, 94vw);
+      align-self: center;
+      width: 100%;
+    }
+
+    .story-frame.story-frame--prose-lg p {
+      font-size: clamp(1.18rem, 1.75vw, 1.52rem);
+      line-height: 1.52;
+    }
+
+    .slide.slide--center .lede.lede--wide {
+      max-width: min(68ch, 94vw);
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+      font-size: clamp(1.05rem, 1.35vw, 1.22rem);
+      line-height: 1.58;
+    }
+
+    /* ---------- Slide 2 & 3: gestapelde blokken, zelfde layout (geen kaders) ---------- */
+    .slide.slide-wat-doen.slide--center,
+    .slide.slide-waarom.slide--center,
+    .slide.slide-doel.slide--center {
+      align-items: stretch;
+    }
+
+    .slide-wat-doen.slide--center .headline,
+    .slide-waarom.slide--center .headline,
+    .slide-doel.slide--center .headline {
+      font-family: var(--font-sub);
+      font-weight: 600;
+      font-style: normal;
+      font-size: clamp(2.35rem, 4.8vw, 4rem);
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      max-width: none;
+      width: 100%;
+      text-align: center;
+      align-self: center;
+      margin-bottom: clamp(2.5rem, 5vh, 3.75rem);
+    }
+
+    .slide-wat-doen .wat-doen-grid,
+    .slide-waarom .wat-doen-grid {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: clamp(2.75rem, 6vh, 4.5rem);
+      width: 100%;
+      max-width: min(54ch, 92vw);
+      margin: 0 auto;
+      align-self: center;
+      flex: 1;
+    }
+
+    /* Slide 4: Gear / Docu / Reiskosten naast elkaar */
+    .slide-doel .wat-doen-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: start;
+      gap: clamp(1.25rem, 2.75vw, 2.25rem);
+      width: 100%;
+      max-width: min(94vw, 68rem);
+      margin: 0 auto;
+      align-self: center;
+      flex: 1;
+    }
+
+    .slide-wat-doen .wat-doen-block,
+    .slide-waarom .wat-doen-block,
+    .slide-doel .wat-doen-block {
+      min-width: 0;
+    }
+
+    /* Zelfde familie als cover-tagline (pagina 1): Inter Tight */
+    .slide-wat-doen .wat-doen-block p,
+    .slide-waarom .wat-doen-block p {
+      font-family: var(--font-sub);
+      font-style: normal;
+      font-weight: 400;
+      font-size: clamp(1.05rem, 1.42vw, 1.38rem);
+      letter-spacing: 0.01em;
+      line-height: 1.55;
+      color: var(--ink-soft);
+      margin: 0;
+    }
+
+    .slide-doel .wat-doen-block p {
+      font-family: var(--font-sub);
+      font-style: normal;
+      font-weight: 400;
+      font-size: clamp(0.9rem, 1.12vw, 1.12rem);
+      letter-spacing: 0.01em;
+      line-height: 1.5;
+      color: var(--ink-soft);
+      margin: 0;
+    }
+
+    .slide-wat-doen .wat-doen-block p strong,
+    .slide-waarom .wat-doen-block p strong,
+    .slide-doel .wat-doen-block p strong {
+      color: var(--tree);
+      font-weight: 600;
+    }
+
+    .slide-doel .doel-story-kicker {
+      display: block;
+      font-family: var(--font-sub);
+      font-size: clamp(0.92rem, 1.38vw, 1.08rem);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--tree);
+      margin-bottom: 0.7rem;
+    }
+
+    @media (max-width: 960px) {
+      .slide-doel .wat-doen-grid {
+        grid-template-columns: 1fr;
+        max-width: min(54ch, 92vw);
+        gap: clamp(2rem, 5vh, 3rem);
+      }
+
+      .slide-doel .wat-doen-block p {
+        font-size: clamp(1.05rem, 1.42vw, 1.38rem);
+        line-height: 1.55;
+      }
+    }
+
+    .slide-wat-doen .slide-wat-doen-cta,
+    .slide-waarom .slide-wat-doen-cta {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      max-width: min(54ch, 92vw);
+      margin: clamp(2rem, 5vh, 3rem) auto 0;
+      align-self: center;
+    }
+
+    /* Ondertitel bij vraag-koppen (door het deck) */
+    .slide-q-sub {
+      font-family: var(--font-sub);
+      font-weight: 500;
+      font-size: clamp(1.02rem, 1.28vw, 1.18rem);
+      line-height: 1.45;
+      color: var(--ink-soft);
+      margin: 0;
+    }
+
+    .slide-q-sub--center {
+      text-align: center;
+      max-width: min(42ch, 92vw);
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .slide-q-sub--start {
+      text-align: left;
+      margin-bottom: clamp(1rem, 2vh, 1.5rem);
+      max-width: 44ch;
+    }
+
+    /* ---------- Slide 6: recap ---------- */
+    .slide.slide-recap.slide--center {
+      padding: calc(var(--slide-pad-top) + var(--lang-bar-height)) var(--slide-pad-x) 10vh;
+      align-items: stretch;
+    }
+
+    .slide-recap.slide--center .topbar {
+      align-self: stretch;
+      margin-bottom: var(--topbar-margin-bottom);
+      width: 100%;
+    }
+
+    .slide-recap.slide--center .recap-headline {
+      font-family: var(--font-sub);
+      font-weight: 600;
+      font-style: normal;
+      text-align: center;
+      align-self: center;
+      max-width: min(38ch, 92vw);
+      font-size: clamp(2rem, 3.8vw, 3rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin-bottom: clamp(1.35rem, 3vh, 2rem);
+    }
+
+    .slide-recap .recap-grid {
+      display: grid;
+      gap: clamp(1.15rem, 2.5vh, 1.65rem);
+      width: 100%;
+      max-width: min(52rem, 94vw);
+      margin: 0 auto;
+      flex: 1;
+      align-content: start;
+    }
+
+    .slide-recap .recap-item {
+      padding-left: 0;
+      border-left: none;
+      padding-bottom: 0.15rem;
+    }
+
+    .slide-recap .recap-kicker {
+      font-family: var(--font-sub);
+      font-size: clamp(0.7rem, 0.92vw, 0.76rem);
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--tree);
+      display: block;
+      margin-bottom: 0.45rem;
+    }
+
+    .slide-recap .recap-text {
+      font-family: var(--font-sub);
+      font-size: clamp(1.08rem, 1.45vw, 1.28rem);
+      line-height: 1.52;
+      color: var(--ink-soft);
+      margin: 0;
+    }
+
+    .slide-recap .recap-text strong {
+      color: var(--tree);
+      font-weight: 600;
+    }
+
+    .slide-recap .slide-recap-cta {
+      margin-top: clamp(1.5rem, 4vh, 2.5rem);
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    /* Slide 7: partner-closer + team */
+    .closer-title.closer-title--question {
+      font-family: var(--font-sub);
+      font-weight: 600;
+      font-style: normal;
+      font-size: clamp(2.05rem, 4vw, 3.35rem);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: clamp(1.25rem, 3vh, 2rem);
+      max-width: min(52ch, 96vw);
+    }
+
+    /* ---------- Slide 5: Partners (social proof) ---------- */
+    .slide.slide-partners.slide--center .topbar {
+      align-self: stretch;
+      margin-bottom: var(--topbar-margin-bottom);
+      width: 100%;
+    }
+
+    .slide-partners.slide--center .headline {
+      font-family: var(--font-sub);
+      font-weight: 600;
+      font-style: normal;
+      max-width: min(46ch, 94vw);
+      margin-bottom: clamp(0.65rem, 1.5vh, 1rem);
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    .slide-partners .partner-lede {
+      font-family: var(--font-sub);
+      font-weight: 600;
+      font-size: clamp(0.72rem, 0.95vw, 0.82rem);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--tree);
+      text-align: center;
+      margin: 0 0 clamp(1.25rem, 3vh, 2rem);
+    }
+
+    /* Partnerlogos op canvas, zonder kader */
+    .partner-strip {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(1.75rem, 4.5vw, 3.25rem);
+      row-gap: clamp(1.25rem, 3vh, 2rem);
+      padding: 0;
+      margin: 0 auto;
+      width: 100%;
+      max-width: min(56rem, 96vw);
+      flex: 1;
+      align-self: center;
+      background: none;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .partner-strip img {
+      display: block;
+      flex: 0 1 auto;
+      width: auto;
+      height: auto;
+      max-height: clamp(2.35rem, 4.6vw, 3.55rem);
+      max-width: min(11.5rem, 28vw);
+      object-fit: contain;
+      opacity: 1;
+    }
+
+    .partner-strip a {
+      display: flex;
+      align-items: center;
+      line-height: 0;
+      text-decoration: none;
+      border-radius: 8px;
+    }
+
+    .partner-strip a:hover img {
+      filter: brightness(0.94);
+    }
+
+    .partner-strip a:focus-visible {
+      outline: 2px solid var(--creek);
+      outline-offset: 4px;
+    }
+
+    .slide-partners .slide-partners-cta {
+      margin-top: clamp(1.75rem, 4.5vh, 3rem);
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .cta-actions {
+      list-style: none;
+      margin: 1rem 0 0;
+      padding: 0;
+      font-family: var(--font-body);
+      font-size: clamp(0.95rem, 1.08vw, 1.05rem);
+      line-height: 1.65;
+      color: var(--ink);
+    }
+
+    .cta-actions li {
+      padding: 0.15rem 0;
+      color: var(--ink-soft);
+    }
+
+    .slide.dark .cta-actions,
+    .slide.dark .cta-actions li {
+      color: rgba(247, 245, 240, 0.88);
+    }
+
+    .slide.closer .closer-body {
+      max-width: min(52rem, 96vw);
+      width: 100%;
+    }
+
+    .closer-intro {
+      font-family: var(--font-body);
+      font-size: clamp(1.05rem, 1.2vw, 1.15rem);
+      line-height: 1.55;
+      color: var(--ink-soft);
+      max-width: 48ch;
+      margin-bottom: 2rem;
+    }
+
+    .closer-contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+      gap: 1.25rem 2rem;
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+
+    .closer-card {
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+      background: rgba(167, 189, 213, 0.12);
+    }
+
+    .closer-card h2 {
+      font-family: var(--font-sub);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--tree);
+      margin-bottom: 0.5rem;
+    }
+
+    .closer-card p,
+    .closer-card a {
+      font-family: var(--font-body);
+      font-size: 0.98rem;
+      line-height: 1.45;
+      color: var(--ink);
+      margin: 0;
+    }
+
+    .closer-card a {
+      color: var(--creek);
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .closer-card a:hover {
+      text-decoration: underline;
+    }
+
+    .closer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .closer-actions a {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.55rem 1.1rem;
+      border-radius: 100px;
+      border: 1.5px solid var(--grass);
+      font-family: var(--font-sub);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--tree);
+      text-decoration: none;
+      background: rgba(151, 160, 129, 0.12);
+    }
+
+    .closer-actions a:hover {
+      border-color: var(--creek);
+      color: var(--creek);
+    }
+
+    .closer-contact-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.6rem;
+      margin-bottom: 0;
+    }
+
+    .closer-contact-block a {
+      font-family: var(--font-sub);
+      font-weight: 500;
+      font-size: clamp(1.08rem, 1.55vw, 1.42rem);
+      letter-spacing: 0.01em;
+      color: var(--creek);
+      text-decoration: none;
+      word-break: break-word;
+      line-height: 1.35;
+    }
+
+    .closer-contact-block a:hover {
+      text-decoration: underline;
+    }
+
+    .closer-contact-mail {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    /* ---------- Slide 4: €30k (zelfde stack als slide 2–3) ---------- */
+    .slide-doel .doel-bedrag {
+      font-family: var(--font-sub);
+      font-style: normal;
+      font-weight: 600;
+      font-size: clamp(2.85rem, 6.5vw, 5.75rem);
+      color: var(--tree);
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      text-align: center;
+      align-self: center;
+      margin: 0 0 clamp(2rem, 4.5vh, 3rem);
+      width: 100%;
+      max-width: min(54ch, 92vw);
+    }
+
+    /* ---------- Sponsor tiers ---------- */
+    .tiers {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+      margin-top: 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tier {
+      padding: 1.5rem 1.5rem 1.25rem;
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Tier slide: alleen lichte verticale spacing-tweaks, typografie blijft consistent */
+    .slide-tiers .topbar { margin-bottom: 3vh; }
+    .slide-tiers .lede { margin-bottom: 2vh; }
+    .slide-tiers .tier-spots { margin-bottom: 1rem; }
+    .slide-tiers .tier-perks li { padding: 0.5rem 0; }
+
+    /* Echt korte schermen (≤740px hoogte): tier-slide compacter */
+    @media (max-height: 740px) {
+      .slide-tiers .topbar { margin-bottom: 2vh; }
+      .slide-tiers .pill { margin-bottom: 0.85rem; }
+      .slide-tiers .headline {
+        font-size: clamp(1.6rem, 3vw, 2.8rem);
+        margin-bottom: 0.6rem;
+      }
+      .slide-tiers .lede {
+        margin-bottom: 1.25vh;
+        font-size: 0.92rem;
+        line-height: 1.45;
+      }
+      .slide-tiers .tier { padding: 1rem 1.1rem 0.85rem; }
+      .slide-tiers .tier-tag { margin-bottom: 0.55rem; }
+      .slide-tiers .tier-amount {
+        font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+        margin-bottom: 0.25rem;
+      }
+      .slide-tiers .tier-spots {
+        font-size: 0.85rem;
+        margin-bottom: 0.65rem;
+      }
+      .slide-tiers .tier-examples {
+        padding: 0.4rem 0.55rem;
+        margin-bottom: 0.55rem;
+        font-size: 0.78rem;
+        line-height: 1.4;
+      }
+      .slide-tiers .tier-perks li {
+        padding: 0.35rem 0;
+        font-size: 0.82rem;
+        line-height: 1.4;
+      }
+      .slide-tiers .tier-narrative p {
+        font-size: 0.78rem;
+        line-height: 1.38;
+        padding: 0.32rem 0 0;
+      }
+      .slide-tiers .tier-featured {
+        top: 0.55rem;
+        right: 0.55rem;
+        font-size: 0.55rem;
+        padding: 0.12rem 0.4rem;
+      }
+    }
+
+    .tier:first-child { padding-left: 0; }
+    .tier:last-child { padding-right: 0; border-right: none; }
+
+    .tier-main {
+      background: rgba(151, 160, 129, 0.18);
+    }
+
+    .tier-featured {
+      position: absolute;
+      top: 0.9rem;
+      right: 0.9rem;
+      font-family: var(--font-sub);
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--tree);
+      padding: 0.18rem 0.55rem;
+      border: 1px solid var(--tree);
+      border-radius: 100px;
+    }
+
+    .tier-tag {
+      font-family: var(--font-sub);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 0.9rem;
+    }
+
+    .tier-main .tier-tag { color: var(--tree); }
+
+    .tier-amount {
+      font-family: var(--font-head);
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(2rem, 3.4vw, 3.4rem);
+      color: var(--ink);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.01em;
+    }
+
+    .tier-main .tier-amount { color: var(--tree); }
+
+    .tier-spots {
+      font-family: var(--font-head);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 0.95rem;
+      color: var(--ink-soft);
+      margin-bottom: 1.5rem;
+    }
+
+    .tier-examples {
+      font-family: var(--font-body);
+      font-size: clamp(0.76rem, 0.84vw, 0.84rem);
+      color: var(--ink-soft);
+      line-height: 1.5;
+      padding: 0.5rem 0.65rem;
+      margin-bottom: 0.85rem;
+      background: rgba(167, 189, 213, 0.25);
+      border-left: 3px solid var(--creek);
+    }
+
+    .tier-examples em {
+      font-style: normal;
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .tier-examples strong {
+      font-family: var(--font-sub);
+      font-weight: 600;
+      color: var(--tree);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .tier-perks {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .tier-perks li {
+      font-family: var(--font-body);
+      font-size: clamp(0.82rem, 0.92vw, 0.92rem);
+      color: var(--ink);
+      line-height: 1.5;
+      padding: 0.6rem 0;
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 0.55rem;
+    }
+
+    .tier-perks li:first-child { border-top: none; padding-top: 0; }
+
+    .tier-perks li::before {
+      content: ">>>";
+      color: var(--creek);
+      font-size: 0.65rem;
+      letter-spacing: -0.06em;
+      flex-shrink: 0;
+    }
+
+    .tier-narrative {
+      margin: 0;
+      padding: 0;
+      flex: 1;
+    }
+
+    .tier-narrative p {
+      font-family: var(--font-body);
+      font-size: clamp(0.78rem, 0.86vw, 0.88rem);
+      color: var(--ink);
+      line-height: 1.55;
+      margin: 0;
+      padding: 0.55rem 0 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .tier-narrative p:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    /* ---------- Slide 6 (dark CTA) ---------- */
+    .slide.dark {
+      background: var(--charcoal);
+      color: var(--cream);
+    }
+
+    .slide.dark .topbar-right { color: rgba(255, 255, 241, 0.55); }
+    .slide.dark .logo { color: var(--cream); }
+
+    .cta-block {
+      margin-top: auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: center;
+      padding-top: 2vh;
+      border-top: 1px solid var(--line);
+    }
+
+    .cta-text {
+      font-family: var(--font-head);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(1.15rem, 1.45vw, 1.45rem);
+      line-height: 1.45;
+      color: var(--ink);
+      max-width: 46ch;
+    }
+
+    .contact-line {
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      letter-spacing: 0.02em;
+      margin-top: 0.7rem;
+    }
+
+    .contact-line a { color: var(--creek); text-decoration: none; }
+    .contact-line a:hover { text-decoration: underline; }
+
+    .slide.dark .cta-block { border-top-color: var(--line-dark); }
+    .slide.dark .cta-text { color: rgba(247, 245, 240, 0.88); }
+    .slide.dark .contact-line { color: rgba(247, 245, 240, 0.55); }
+    .slide.dark .contact-line a { color: var(--sky); }
+
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.95rem 1.8rem;
+      background: var(--tree);
+      color: var(--cream);
+      border-radius: 100px;
+      font-family: var(--font-sub);
+      font-size: 0.92rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      text-decoration: none;
+    }
+
+    .cta-button:hover { background: var(--creek); color: var(--canvas); transform: translateY(-1px); }
+    .cta-button .arrow { font-size: 1rem; }
+
+    .cta-buttons-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: stretch;
+    }
+
+    .signature {
+      font-family: var(--font-head);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      margin-top: 0.8rem;
+      text-align: right;
+    }
+
+    .slide.dark .signature { color: rgba(247, 245, 240, 0.55); }
+
+    /* ---------- Slide donate (vóór closer) ---------- */
+    .slide.slide-donate.slide--center {
+      align-items: stretch;
+    }
+
+    .slide-donate.slide--center .topbar {
+      align-self: stretch;
+      width: 100%;
+      margin-bottom: var(--topbar-margin-bottom);
+    }
+
+    .slide-donate.slide--center .headline {
+      font-family: var(--font-sub);
+      font-weight: 600;
+      font-style: normal;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      text-align: center;
+      margin-bottom: 0.6rem;
+    }
+
+    .slide-donate .donate-lede {
+      font-family: var(--font-sub);
+      font-size: clamp(1rem, 1.35vw, 1.2rem);
+      color: var(--ink-soft);
+      text-align: center;
+      max-width: min(48ch, 92vw);
+      margin: 0 auto clamp(1.5rem, 3.5vh, 2.5rem);
+      line-height: 1.52;
+    }
+
+    .slide-donate .donate-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(0.85rem, 2vw, 1.35rem);
+      width: 100%;
+      max-width: min(70rem, 96vw);
+      margin: 0 auto;
+      align-self: center;
+      flex: 1;
+      align-items: stretch;
+    }
+
+    .slide-donate .donate-card {
+      display: flex;
+      flex-direction: column;
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
+      padding: clamp(1.1rem, 2.25vw, 1.55rem);
+      background: rgba(167, 189, 213, 0.08);
+    }
+
+    .slide-donate .donate-card-amount {
+      font-family: var(--font-sub);
+      font-weight: 600;
+      font-size: clamp(1.55rem, 2.85vw, 2.05rem);
+      letter-spacing: -0.03em;
+      color: var(--tree);
+      margin-bottom: 0.45rem;
+    }
+
+    .slide-donate .donate-card-caption {
+      font-family: var(--font-sub);
+      font-size: clamp(0.82rem, 1.05vw, 0.9rem);
+      color: var(--ink-soft);
+      line-height: 1.42;
+      margin-bottom: auto;
+      padding-bottom: 1rem;
+    }
+
+    .slide-donate .donate-card-hint {
+      font-family: var(--font-sub);
+      font-size: clamp(0.74rem, 0.92vw, 0.82rem);
+      font-weight: 500;
+      color: var(--tree);
+      line-height: 1.45;
+      text-align: center;
+      margin: -0.35rem 0 0.75rem;
+      padding-bottom: 0;
+    }
+
+    .donate-pay-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 0.45rem;
+      padding: 0.82rem 1.1rem;
+      border-radius: 100px;
+      background: var(--tree);
+      color: var(--cream);
+      font-family: var(--font-sub);
+      font-size: clamp(0.82rem, 1.05vw, 0.9rem);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      transition: background 0.2s ease, transform 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .donate-pay-link:hover {
+      background: var(--creek);
+      color: var(--canvas);
+      transform: translateY(-1px);
+    }
+
+    .slide-donate .slide-donate-cta {
+      margin-top: clamp(1rem, 2.25vh, 1.85rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.65rem;
+      width: 100%;
+    }
+
+    .cta-button.cta-button--secondary {
+      background: transparent;
+      color: var(--tree);
+      border: 1.5px solid var(--tree);
+      box-sizing: border-box;
+    }
+
+    .cta-button.cta-button--secondary:hover {
+      background: rgba(167, 189, 213, 0.14);
+      color: var(--tree);
+    }
+
+    .slide-donate .donate-practical {
+      align-self: center;
+      margin-top: clamp(0.75rem, 2vh, 1.35rem);
+      max-width: min(60ch, 94vw);
+      font-family: var(--font-sub);
+      font-size: clamp(0.72rem, 0.9vw, 0.81rem);
+      color: var(--ink-soft);
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    .slide-donate .donate-practical strong {
+      color: var(--tree);
+      font-weight: 600;
+    }
+
+    .donate-practical-mail {
+      display: inline;
+      font-weight: 600;
+      color: var(--creek);
+      text-decoration: underline;
+      text-underline-offset: 0.12em;
+    }
+
+    .donate-practical-mail:hover {
+      color: var(--tree);
+    }
+
+    .closer-pay-note {
+      font-family: var(--font-sub);
+      font-size: clamp(0.72rem, 0.88vw, 0.81rem);
+      color: var(--ink-soft);
+      line-height: 1.52;
+      margin-top: 0.85rem;
+      text-align: left;
+      max-width: 44ch;
+    }
+
+    .closer-pay-note strong {
+      color: var(--tree);
+      font-weight: 600;
+    }
+
+    .closer-pay-wrap {
+      width: 100%;
+      margin: 0 0 clamp(1.25rem, 2.75vh, 2rem);
+      max-width: min(48rem, 96vw);
+    }
+
+    .closer-pay-kicker {
+      font-family: var(--font-sub);
+      font-size: clamp(0.88rem, 1.15vw, 1rem);
+      font-weight: 600;
+      color: var(--tree);
+      margin: 0 0 0.65rem;
+      line-height: 1.4;
+    }
+
+    .closer-pay-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      align-items: center;
+    }
+
+    .donate-pay-link--compact {
+      padding: 0.62rem 0.95rem;
+      font-size: clamp(0.76rem, 0.95vw, 0.84rem);
+    }
+
+    @media (max-width: 900px) {
+      .slide-donate .donate-grid {
+        grid-template-columns: 1fr;
+        max-width: min(52ch, 94vw);
+      }
+    }
+
+    /* ---------- CONTACT / CLOSER ---------- */
+    .slide.closer {
+      justify-content: space-between;
+    }
+
+    .closer-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      max-width: 48rem;
+    }
+
+    .closer-title {
+      font-family: var(--font-head);
+      font-weight: 400;
+      font-size: clamp(3rem, 8vw, 8.5rem);
+      line-height: 1.02;
+      letter-spacing: -0.032em;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+    }
+
+    .closer-sub {
+      font-family: var(--font-body);
+      font-size: clamp(1rem, 1.15vw, 1.12rem);
+      color: var(--ink-soft);
+      line-height: 1.55;
+      max-width: 36ch;
+      margin-bottom: 2.25rem;
+    }
+
+    .closer-channels {
+      width: 100%;
+      border-top: 1px solid var(--line);
+      padding-top: 1.85rem;
+    }
+
+    .closer-channels p {
+      margin-bottom: 0.65rem;
+    }
+
+    .closer-channels p:last-child {
+      margin-bottom: 0;
+    }
+
+    .closer-channels p:last-child {
+      display: inline-block;
+      min-width: 3.75rem;
+      font-family: var(--font-sub);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      vertical-align: baseline;
+    }
+
+    .closer-channel-link {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--creek);
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .closer-channel-link:hover {
+      text-decoration: underline;
+    }
+
+    .closer-signoff {
+      width: 100%;
+      margin: 0 0 clamp(1.5rem, 3.5vh, 2.25rem);
+      padding: 0;
+      border: none;
+      font-family: var(--font-sub);
+      font-style: normal;
+      font-weight: 400;
+      font-size: clamp(1.32rem, 2.05vw, 1.82rem);
+      color: var(--ink-soft);
+      line-height: 1.52;
+      max-width: min(48ch, 94vw);
+    }
+
+    .closer-signoff strong {
+      font-style: normal;
+      font-weight: 600;
+      color: var(--tree);
+    }
+
+    /* ---------- Navigation ---------- */
+    .nav {
+      position: fixed;
+      bottom: 2.4vh;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.55rem 1rem;
+      background: rgba(42, 55, 35, 0.92);
+      backdrop-filter: blur(12px);
+      border-radius: 100px;
+      border: 1px solid rgba(255, 255, 241, 0.12);
+      z-index: 100;
+      opacity: 1;
+      transition: opacity 0.4s ease;
+    }
+
+    .nav.idle {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Keyboard focus indicator */
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid var(--creek);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+    .slide.dark a:focus-visible,
+    .slide.dark button:focus-visible {
+      outline-color: var(--sky);
+    }
+    .nav button:focus-visible,
+    .dot:focus-visible {
+      outline-color: var(--cream);
+    }
+
+    .nav button {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 241, 0.88);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-family: var(--font-sub);
+      font-weight: 500;
+      padding: 0.25rem 0.6rem;
+      border-radius: 100px;
+    }
+    .nav button:hover { color: var(--sand); }
+    .nav button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .dots { display: flex; gap: 0.45rem; align-items: center; }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 241, 0.28);
+      transition: all 0.3s ease;
+      cursor: pointer; border: none; padding: 0;
+    }
+    .dot.active { background: var(--sand); width: 20px; border-radius: 4px; }
+
+    /* ---------- Print ---------- */
+    @media print {
+      @page { size: 1600px 900px; margin: 0; }
+      html, body { background: white; overflow: visible; height: auto; }
+      .deck { width: 1600px; height: auto; }
+      .slide {
+        position: relative;
+        width: 1600px;
+        height: 900px;
+        opacity: 1 !important;
+        transform: none !important;
+        page-break-after: always;
+        break-after: page;
+      }
+      .nav { display: none; }
+    }
+
+    @media (max-width: 900px) {
+      .row { grid-template-columns: 40px 1fr; }
+      .row .row-detail { grid-column: 2; text-align: left; }
+      .cta-block { grid-template-columns: 1fr; gap: 1.5rem; }
+      .slide { padding: calc(5vh + var(--lang-bar-height)) var(--slide-pad-x) 10vh; }
+    }
+  </style>
+</head>
+<body>
+  <div
+    id="preloader"
+    class="preloader"
+    role="progressbar"
+    aria-busy="true"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-valuenow="0"
+    aria-label="Laden"
+  >
+    <div id="preloader-lottie" class="preloader-lottie"></div>
+  </div>
+
+  <div class="lang-bar" id="lang-bar-region" role="region" aria-label="Taal">
+    <span class="lang-bar-label lang-nl">Taal</span>
+    <span class="lang-bar-label lang-en">Language</span>
+    <div class="lang-segment" id="lang-segment-group" role="group" aria-label="Kies taal">
+      <button type="button" id="lang-btn-nl" aria-pressed="true" aria-label="Schakel naar Nederlands">NL</button>
+      <button type="button" id="lang-btn-en" aria-pressed="false" aria-label="Switch to English">EN</button>
+    </div>
+  </div>
+  <div class="deck" id="deck">
+
+    <!-- ============ SLIDE 1: COVER ============ -->
+    <section class="slide cover active" data-index="0">
+      <div class="topbar">
+        <div class="logo">
+          <img
+            class="logo-img"
+            src="assets/brand/logo-lockup-darkbg.png"
+            width="260"
+            height="150"
+            alt="Back to Being"
+            decoding="async"
+          />
+        </div>
+        <div class="topbar-right">
+          <span>01 / 08</span>
+        </div>
+      </div>
+
+      <h1 class="cover-headline">
+        <span class="lang-nl i18n-block">De wereld<br /> als ons <em>kantoor.</em></span>
+        <span class="lang-en i18n-block">The world<br /> as our <em>office.</em></span>
+      </h1>
+
+      <div class="cover-foot">
+        <p class="cover-tagline">
+          <span class="lang-nl i18n-block">
+            Drie AI-nerds maken van de Camino hun kantoor: 115 km,
+            live bouwen in beeld, daarna een echte overdracht aan MIND.
+            <span class="cover-tagline-accent">Sponsoring zet dit verhaal op de kaart. Loop je met ons mee?</span>
+          </span>
+          <span class="lang-en i18n-block">
+            Three AI nerds are turning the Camino into their office: 115 km,
+            building live on camera, then a real handover to MIND.
+            <span class="cover-tagline-accent">Sponsoring puts this story on the map. Will you walk with us?</span>
+          </span>
+        </p>
+        <div class="cover-foot-partners">
+          <p class="cover-foot-partners-kicker">
+            <span class="lang-nl">Zij lopen al mee:</span>
+            <span class="lang-en">Already on board:</span>
+          </p>
+          <div class="cover-foot-logos" role="group" aria-label="Partners">
+            <a
+              href="https://techleap.nl/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="assets/partners/techleap-wordmark.png"
+                alt="TechLeap"
+                width="149"
+                height="53"
+                loading="lazy"
+                decoding="async"
+              />
+            </a>
+            <a
+              href="https://aiam.amsterdam/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="assets/partners/ai-am-wordmark.png"
+                alt="ai.am"
+                width="149"
+                height="49"
+                loading="lazy"
+                decoding="async"
+              />
+            </a>
+            <a
+              href="https://www.lerai.ai/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="assets/partners/lerai-wordmark.png"
+                alt="Lerai"
+                width="102"
+                height="54"
+                loading="lazy"
+                decoding="async"
+              />
+            </a>
+            <a
+              href="https://www.tag.space/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="assets/partners/tag-wordmark.png"
+                alt="TAG"
+                width="116"
+                height="37"
+                loading="lazy"
+                decoding="async"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 2: WAT GAAN WE DOEN? ============ -->
+    <section class="slide slide--center slide-wat-doen" data-index="1">
+      <div class="topbar">
+        <div class="logo">
+          <img
+            class="logo-img"
+            src="assets/brand/logo-lockup-darkbg.png"
+            width="260"
+            height="150"
+            alt="Back to Being"
+            decoding="async"
+          />
+        </div>
+        <div class="topbar-right">
+          <span>02 / 08</span>
+        </div>
+      </div>
+
+      <h1 class="headline">
+        <span class="lang-nl">Wat gaan we doen?</span>
+        <span class="lang-en">What will we do?</span>
+      </h1>
+
+      <div class="wat-doen-grid">
+        <div class="wat-doen-block">
+          <p>
+            <span class="lang-nl i18n-block">
+            Drie AI-nerds uit Amsterdam lopen deze zomer de Camino van Tui naar Santiago en
+            bouwen onderweg live aan één AI-tool voor mentale gezondheid. Daarna dragen we die
+            <strong>gratis</strong> over aan <strong>MIND</strong>. Sponsors maken reis,
+            productie en overdracht mogelijk.
+            </span>
+            <span class="lang-en i18n-block">
+            Three AI nerds from Amsterdam are walking the Camino from Tui to Santiago this summer and
+            building one AI tool for mental health live along the way. Afterwards we hand it
+            <strong>free of charge</strong> to <strong>MIND</strong>. Sponsors make travel,
+            production and handover possible.
+            </span>
+          </p>
+        </div>
+        <div class="wat-doen-block">
+          <p>
+            <span class="lang-nl i18n-block">
+            Samen met MIND bepalen we wat we bouwen: hun behoefte leidt, wij leveren iets
+            bruikbaars. Zo blijft het verhaal concreet: een route in het landschap, bouwen in de
+            open lucht en een eindproduct bij een organisatie die werkt aan mentale gezondheid.
+            </span>
+            <span class="lang-en i18n-block">
+            Together with MIND we decide what we build: their need leads, we deliver something
+            usable. That keeps the story concrete: a route through the landscape, building in the
+            open air, and an end product with an organisation that works on mental health.
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <div class="slide-wat-doen-cta">
+        <button type="button" class="cta-button" id="cta-wat-doen-next"
+          data-aria-nl="Volgende slide" data-aria-en="Next slide"
+          aria-label="Volgende slide">
+          <span class="lang-nl">Hoe gaan we dit doen</span><span class="lang-en">How we'll do it</span><span class="arrow" aria-hidden="true"> →</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 3: WERELD ALS KANTOOR ============ -->
+    <section class="slide slide--center slide-waarom" data-index="2">
+      <div class="topbar">
+        <div class="logo">
+          <img
+            class="logo-img"
+            src="assets/brand/logo-lockup-darkbg.png"
+            width="260"
+            height="150"
+            alt="Back to Being"
+            decoding="async"
+          />
+        </div>
+        <div class="topbar-right">
+          <span>03 / 08</span>
+        </div>
+      </div>
+
+      <h1 class="headline">
+        <span class="lang-nl">Vanaf nu is de wereld ons kantoor</span>
+        <span class="lang-en">From now on, the world is our office</span>
+      </h1>
+
+      <div class="wat-doen-grid">
+        <div class="wat-doen-block">
+          <p>
+            <span class="lang-nl i18n-block">
+            Met <strong>AI</strong> kun je ongelooflijk veel versnellen, en toch zitten veel
+            kenniswerkers nog steeds <strong>veertig uur per week achter een bureau</strong>,
+            alsof er niets fundamenteels verandert.
+            </span>
+            <span class="lang-en i18n-block">
+            With <strong>AI</strong> you can speed up incredibly much, yet many
+            knowledge workers still sit <strong>forty hours a week at a desk</strong>,
+            as if nothing fundamental is changing.
+            </span>
+          </p>
+        </div>
+        <div class="wat-doen-block">
+          <p>
+            <span class="lang-nl i18n-block">
+            De werkweek voelt voor veel mensen sneller digitaal dan menselijk. Terwijl technologie
+            juist ruimte zou moeten geven voor wie we zijn, zeker rond <strong>mentale gezondheid</strong>.
+            </span>
+            <span class="lang-en i18n-block">
+            For many people the work week feels more digital than human. While technology
+            should make room for who we are—especially around <strong>mental health</strong>.
+            </span>
+          </p>
+        </div>
+        <div class="wat-doen-block">
+          <p>
+            <span class="lang-nl i18n-block">
+            Wij trekken dat door naar het <strong>extreme</strong>: de <strong>Camino</strong> als
+            kantoor, live bouwen onderweg en een mini-docu die laat hoe zweet en software samenkomen,
+            voor MIND, het publiek en partners die durven te sponsoren.
+            </span>
+            <span class="lang-en i18n-block">
+            We take that to the <strong>extreme</strong>: the <strong>Camino</strong> as
+            office, building live on the road and a mini doc that shows sweat and software meeting,
+            for MIND, the public and partners who dare to sponsor.
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <div class="slide-wat-doen-cta">
+        <button type="button" class="cta-button" id="cta-waarom-next"
+          data-aria-nl="Volgende slide" data-aria-en="Next slide"
+          aria-label="Volgende slide">
+          <span class="lang-nl">Wat hebben we nodig?</span><span class="lang-en">What do we need?</span><span class="arrow" aria-hidden="true"> →</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 4: WAT HEBBEN WE NODIG / €30K ============ -->
+    <section class="slide slide--center slide-doel" data-index="3">
+      <div class="topbar">
+        <div class="logo">
+          <img
+            class="logo-img"
+            src="assets/brand/logo-lockup-darkbg.png"
+            width="260"
+            height="150"
+            alt="Back to Being"
+            decoding="async"
+          />
+        </div>
+        <div class="topbar-right">
+          <span>04 / 08</span>
+        </div>
+      </div>
+
+      <h1 class="headline">
+        <span class="lang-nl">Wat hebben we nodig om van de wereld ons kantoor te maken?</span>
+        <span class="lang-en">What do we need to make the world our office?</span>
+      </h1>
+
+      <div class="doel-bedrag">
+        <span class="lang-nl" lang="nl">€30.000</span>
+        <span class="lang-en" lang="en">€30,000</span>
+      </div>
+
+      <div class="wat-doen-grid">
+        <div class="wat-doen-block">
+          <p>
+            <span class="lang-nl i18n-block">
+            <span class="doel-story-kicker">Gear</span>
+            Een dag op de Camino vraagt iets anders dan een dag aan een bureau. Schoenen voor lange etappes,
+            een bril die schakelt tussen onze laptop en onze ogen, gear waarmee we handsfree kunnen werken en
+            goede oortjes zodat we met onze devices práten in plaats van typen. Voeding die ons door de etappes
+            trekt en een eigen verbinding waar het netwerk wegvalt.
+            </span>
+            <span class="lang-en i18n-block">
+            <span class="doel-story-kicker">Gear</span>
+            A day on the Camino asks something different from a day at a desk. Shoes for long stages,
+            glasses that switch between our laptop and our eyes, gear to work hands-free and
+            good earbuds so we talk to our devices instead of typing. Food that carries us through the stages
+            and our own connection when the network drops.
+            </span>
+          </p>
+        </div>
+        <div class="wat-doen-block">
+          <p>
+            <span class="lang-nl i18n-block">
+            <span class="doel-story-kicker">Docu</span>
+            Dit verhaal vertellen we niet achteraf, we leggen het onderweg vast. Met compacte camera en audio
+            vangen we waar zweet en software samenkomen. Want dit is geen vlog over een wandeling, dit is een
+            statement. We laten zien dat je vanaf overal kunt werken en dat dat beter is voor je mentale
+            gezondheid dan veertig uur achter een bureau.
+            <strong>Vanaf nu is de wereld ons kantoor.</strong>
+            </span>
+            <span class="lang-en i18n-block">
+            <span class="doel-story-kicker">Docu</span>
+            We do not tell this story afterwards—we capture it on the way. With a compact camera and audio
+            we catch where sweat and software meet. This is not a vlog about a walk—it is a
+            statement. We show you can work from anywhere—and that that is better for your mental
+            health than forty hours behind a desk.
+            <strong>From now on, the world is our office.</strong>
+            </span>
+          </p>
+        </div>
+        <div class="wat-doen-block">
+          <p>
+            <span class="lang-nl i18n-block">
+            <span class="doel-story-kicker">Reiskosten</span>
+            De route is geen verplaatsing tussen punten, de route ís het experiment. Elke kilometer brengt ons
+            dichter bij Santiago, en houdt ons middenin het verhaal terwijl we doorbouwen voor <strong>MIND</strong>.
+            </span>
+            <span class="lang-en i18n-block">
+            <span class="doel-story-kicker">Travel</span>
+            The route is not moving between points—the route <em>is</em> the experiment. Every kilometre brings us
+            closer to Santiago and keeps us inside the story while we keep building for <strong>MIND</strong>.
+            </span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 5: PARTNERS ============ -->
+    <section class="slide slide--center slide-partners" data-index="4">
+      <div class="topbar">
+        <div class="logo">
+          <img
+            class="logo-img"
+            src="assets/brand/logo-lockup-darkbg.png"
+            width="260"
+            height="150"
+            alt="Back to Being"
+            decoding="async"
+          />
+        </div>
+        <div class="topbar-right">
+          <span>05 / 08</span>
+        </div>
+      </div>
+
+      <h1 class="headline">
+        <span class="lang-nl">Word jij partner in dit verhaal?</span>
+        <span class="lang-en">Will you partner with us in this story?</span>
+      </h1>
+      <p class="partner-lede">
+        <span class="lang-nl">Ze lopen nu al met ons mee.</span>
+        <span class="lang-en">They are already walking with us.</span>
+      </p>
+
+      <div class="partner-strip" role="group" aria-label="Partners">
+        <a href="https://techleap.nl/" target="_blank" rel="noopener noreferrer">
+          <img src="assets/partners/techleap-wordmark.png" alt="TechLeap" width="149" height="53" loading="lazy" decoding="async" />
+        </a>
+        <a href="https://aiam.amsterdam/" target="_blank" rel="noopener noreferrer">
+          <img src="assets/partners/ai-am-wordmark.png" alt="ai.am" width="149" height="49" loading="lazy" decoding="async" />
+        </a>
+        <a href="https://www.lerai.ai/" target="_blank" rel="noopener noreferrer">
+          <img src="assets/partners/lerai-wordmark.png" alt="Lerai" width="102" height="54" loading="lazy" decoding="async" />
+        </a>
+        <a href="https://www.tag.space/" target="_blank" rel="noopener noreferrer">
+          <img src="assets/partners/tag-wordmark.png" alt="TAG" width="116" height="37" loading="lazy" decoding="async" />
+        </a>
+      </div>
+
+      <div class="slide-partners-cta">
+        <button type="button" class="cta-button" id="cta-partners-next"
+          data-aria-nl="Ga naar sponsoring: kies een niveau en stuur een mail"
+          data-aria-en="Go to sponsorship: pick a tier and email us"
+          aria-label="Ga naar sponsoring: kies een niveau en stuur een mail">
+          <span class="lang-nl">Loop jij ook met ons mee?</span><span class="lang-en">Will you walk with us too?</span><span class="arrow" aria-hidden="true"> →</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 6: RECAP ============ -->
+    <section class="slide slide-recap slide--center" data-index="5">
+      <div class="topbar">
+        <div class="logo">
+          <img
+            class="logo-img"
+            src="assets/brand/logo-lockup-darkbg.png"
+            width="260"
+            height="150"
+            alt="Back to Being"
+            decoding="async"
+          />
+        </div>
+        <div class="topbar-right">
+          <span>06 / 08</span>
+        </div>
+      </div>
+
+      <h1 class="headline recap-headline">
+        <span class="lang-nl">Samengevat</span>
+        <span class="lang-en">In summary</span>
+      </h1>
+
+      <div class="recap-grid">
+        <div class="recap-item">
+          <span class="recap-kicker"><span class="lang-nl">Het idee</span><span class="lang-en">The idea</span></span>
+          <p class="recap-text">
+            <span class="lang-nl i18n-block">
+            De wereld als kantoor: de Camino wordt onze werkplek. We bouwen onderweg live aan één
+            AI-product voor mentale gezondheid en dragen het daarna <strong>gratis</strong> over aan <strong>MIND</strong>.
+            </span>
+            <span class="lang-en i18n-block">
+            The world as office: the Camino becomes our workplace. We build one live
+            AI product for mental health along the way and hand it <strong>free of charge</strong> to <strong>MIND</strong>.
+            </span>
+          </p>
+        </div>
+        <div class="recap-item">
+          <span class="recap-kicker"><span class="lang-nl">Het verhaal</span><span class="lang-en">The story</span></span>
+          <p class="recap-text">
+            <span class="lang-nl i18n-block">
+            Van bureau naar bergpas: laten zien dat technologie en menselijkheid samenkunnen, met een
+            mini-docu die vastlegt hoe dat er op het pad uitziet.
+            </span>
+            <span class="lang-en i18n-block">
+            From desk to mountain pass: showing that technology and humanity can meet, with a
+            mini doc that captures what that looks like on the trail.
+            </span>
+          </p>
+        </div>
+        <div class="recap-item">
+          <span class="recap-kicker"><span class="lang-nl">Het budget</span><span class="lang-en">The budget</span></span>
+          <p class="recap-text">
+            <span class="lang-nl i18n-block">
+            <strong>€30.000</strong> voor onder andere gear en voeding, slaapplekken, de reis zelf,
+            wifi onderweg en apparatuur om dit verhaal in een mini-docu scherp te vertellen.
+            </span>
+            <span class="lang-en i18n-block">
+            <strong>€30,000</strong> for gear and food, places to sleep, the journey itself,
+            wifi on the road and kit to tell this story sharply in a mini doc.
+            </span>
+          </p>
+        </div>
+        <div class="recap-item">
+          <span class="recap-kicker"><span class="lang-nl">Partners</span><span class="lang-en">Partners</span></span>
+          <p class="recap-text">
+            <span class="lang-nl i18n-block">
+            <strong>TechLeap</strong>, <strong>ai.am</strong>, <strong>Lerai</strong> en <strong>TAG</strong> zijn nu al mee. Het verhaal heeft tractie.
+            </span>
+            <span class="lang-en i18n-block">
+            <strong>TechLeap</strong>, <strong>ai.am</strong>, <strong>Lerai</strong> and <strong>TAG</strong> are already on board. The story has momentum.
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <div class="slide-recap-cta">
+        <button type="button" class="cta-button" id="cta-recap-next"
+          data-aria-nl="Naar sponsoring: niveaus €1k, €5k en €10k — via mail"
+          data-aria-en="Sponsorship tiers at €1k, €5k and €10k — by email"
+          aria-label="Naar sponsoring: niveaus €1k, €5k en €10k — via mail">
+          <span class="lang-nl">Sponsoring — €1k / €5k / €10k</span><span class="lang-en">Sponsorship — €1k / €5k / €10k</span><span class="arrow" aria-hidden="true"> →</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 7: SPONSORING (geen online betaalpagina) ============ -->
+    <section class="slide slide--center slide-donate" data-index="6">
+      <div class="topbar">
+        <div class="logo">
+          <img
+            class="logo-img"
+            src="assets/brand/logo-lockup-darkbg.png"
+            width="260"
+            height="150"
+            alt="Back to Being"
+            decoding="async"
+          />
+        </div>
+        <div class="topbar-right">
+          <span>07 / 08</span>
+        </div>
+      </div>
+
+      <h1 class="headline">
+        <span class="lang-nl">Word partner in dit verhaal!</span>
+        <span class="lang-en">Become a partner in this story!</span>
+      </h1>
+      <p class="donate-lede">
+        <span class="lang-nl">
+          <strong>Drie indicatieve niveaus.</strong> Kies het bedrag dat bij je past en stuur ons een mail—dan leggen we facturatie, timing en zichtbaarheid persoonlijk vast.
+          <strong>Geen online betaalpagina op deze deck.</strong>
+        </span>
+        <span class="lang-en">
+          <strong>Three indicative tiers.</strong> Pick the amount that fits and email us—we'll align invoicing, timing and visibility personally.
+          <strong>No online checkout on this deck.</strong>
+        </span>
+      </p>
+
+      <div class="donate-grid" role="list">
+        <div class="donate-card" role="listitem">
+          <div class="donate-card-amount">
+            <span class="lang-nl">€1.000</span>
+            <span class="lang-en">€1,000</span>
+          </div>
+          <p class="donate-card-caption">
+            <span class="lang-nl">Sterke steun voor reis, gear en productie—zichtbaar in het partnerverhaal.</span>
+            <span class="lang-en">Strong support for travel, gear and production—visible in the partner story.</span>
+          </p>
+          <p class="donate-card-hint">
+            <span class="lang-nl">Interesse in dit niveau? Open je mailclient om het gesprek te starten:</span>
+            <span class="lang-en">Interested in this tier? Open your mail app to start the conversation:</span>
+          </p>
+          <a class="donate-pay-link" href="#" data-donate-eur="1000"
+            data-aria-nl="Mail openen om sponsoring €1.000 te bespreken"
+            data-aria-en="Open email to discuss €1,000 sponsorship">
+            <span class="lang-nl">Mail over €1.000 — sponsor</span>
+            <span class="lang-en">Email about €1,000 — sponsor</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+        <div class="donate-card" role="listitem">
+          <div class="donate-card-amount">
+            <span class="lang-nl">€5.000</span>
+            <span class="lang-en">€5,000</span>
+          </div>
+          <p class="donate-card-caption">
+            <span class="lang-nl">Hoger commitment: meer ruimte voor zichtbaarheid rond de Camino en MIND.</span>
+            <span class="lang-en">Higher commitment: more room for visibility around the Camino and MIND.</span>
+          </p>
+          <p class="donate-card-hint">
+            <span class="lang-nl">Interesse in dit niveau? Open je mailclient om het gesprek te starten:</span>
+            <span class="lang-en">Interested in this tier? Open your mail app to start the conversation:</span>
+          </p>
+          <a class="donate-pay-link" href="#" data-donate-eur="5000"
+            data-aria-nl="Mail openen om sponsoring €5.000 te bespreken"
+            data-aria-en="Open email to discuss €5,000 sponsorship">
+            <span class="lang-nl">Mail over €5.000 — sponsor</span>
+            <span class="lang-en">Email about €5,000 — sponsor</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+        <div class="donate-card" role="listitem">
+          <div class="donate-card-amount">
+            <span class="lang-nl">€10.000</span>
+            <span class="lang-en">€10,000</span>
+          </div>
+          <p class="donate-card-caption">
+            <span class="lang-nl">Strategische partnerbijdrage: maximaal bereik in communicatie en pitches.</span>
+            <span class="lang-en">Strategic partner-level contribution: broad reach across comms and pitches.</span>
+          </p>
+          <p class="donate-card-hint">
+            <span class="lang-nl">Interesse in dit niveau? Open je mailclient om het gesprek te starten:</span>
+            <span class="lang-en">Interested in this tier? Open your mail app to start the conversation:</span>
+          </p>
+          <a class="donate-pay-link" href="#" data-donate-eur="10000"
+            data-aria-nl="Mail openen om sponsoring €10.000 te bespreken"
+            data-aria-en="Open email to discuss €10,000 sponsorship">
+            <span class="lang-nl">Mail over €10.000 — sponsor</span>
+            <span class="lang-en">Email about €10,000 — sponsor</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </div>
+
+      <p class="donate-practical">
+        <span class="lang-nl">
+          <strong>Factuur?</strong> Ja—op naam van je organisatie. Mail ons je bedrijfsgegevens en gewenst niveau; we stemmen betaling en administratie af (geen publiek IBAN op deze pagina).
+          <strong>Anders bedrag of maatwerk?</strong> Geen probleem—beschrijf het kort in je mail.
+          <strong>Belastingaftrek?</strong> Afhankelijk van jullie structuur en regels; inhoudelijk denken we mee naast jullie adviseurs.
+          <strong>Eén mail voor alle opties?</strong>
+          <a class="donate-practical-mail" data-sponsor-mailto href="#">Open vooringevulde mail voor sponsoring (alle niveaus)</a>.
+        </span>
+        <span class="lang-en">
+          <strong>Invoice?</strong> Yes—for your organisation. Email company details and your preferred tier; we'll align payment and admin (no public IBAN on this page).
+          <strong>Custom amount?</strong> Briefly describe it in your email.
+          <strong>Tax deductibility?</strong> Depends on your structure and local rules—we can explain alongside your advisers.
+          <strong>One email for every tier?</strong>
+          <a class="donate-practical-mail" data-sponsor-mailto href="#">Open prefilled sponsorship email (all tiers)</a>.
+        </span>
+      </p>
+
+      <div class="slide-donate-cta">
+        <button type="button" class="cta-button cta-button--secondary" id="cta-donate-next"
+          data-aria-nl="Volgende slide: direct contactmail en telefoon"
+          data-aria-en="Next slide: email and phone"
+          aria-label="Volgende slide: direct contactmail en telefoon">
+          <span class="lang-nl">Liever inhoudelijke vraag? → contact</span><span class="lang-en">Other questions → contact</span><span class="arrow" aria-hidden="true"> →</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 8: CONTACT ============ -->
+    <section class="slide closer" data-index="7">
+      <div class="topbar">
+        <div class="logo">
+          <img
+            class="logo-img"
+            src="assets/brand/logo-lockup-darkbg.png"
+            width="260"
+            height="150"
+            alt="Back to Being"
+            decoding="async"
+          />
+        </div>
+        <div class="topbar-right">
+          <span>08 / 08</span>
+        </div>
+      </div>
+
+      <div class="closer-body">
+        <h1 class="closer-title closer-title--question">
+          <span class="lang-nl">Word jij partner in dit verhaal?</span>
+          <span class="lang-en">Will you partner with us in this story?</span>
+        </h1>
+
+        <p class="closer-signoff">
+          <span class="lang-nl i18n-block">
+          <strong>De wereld als ons kantoor.</strong> Zet samen met ons de eerste stap richting Santiago de Compostela.
+          </span>
+          <span class="lang-en i18n-block">
+          <strong>The world as our office.</strong> Take the first step toward Santiago de Compostela with us.
+          </span>
+        </p>
+
+        <div class="closer-pay-wrap">
+          <p class="closer-pay-kicker">
+            <span class="lang-nl">Klaar om mee te lopen? Mail ons met je gewenste niveau of stel eerst je vraag.</span>
+            <span class="lang-en">Ready to walk with us? Email your preferred tier—or ask a question first.</span>
+          </p>
+          <div class="closer-pay-strip" role="group" data-aria-nl="Snel mailen: drie sponsoringsniveaus" data-aria-en="Quick email: three sponsorship tiers">
+            <a class="donate-pay-link donate-pay-link--compact" href="#" data-donate-eur="1000"
+              data-aria-nl="Mail over sponsoring €1.000"
+              data-aria-en="Email about €1,000 sponsorship">
+              <span class="lang-nl">€1.000</span>
+              <span class="lang-en">€1,000</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <a class="donate-pay-link donate-pay-link--compact" href="#" data-donate-eur="5000"
+              data-aria-nl="Mail over sponsoring €5.000"
+              data-aria-en="Email about €5,000 sponsorship">
+              <span class="lang-nl">€5.000</span>
+              <span class="lang-en">€5,000</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <a class="donate-pay-link donate-pay-link--compact" href="#" data-donate-eur="10000"
+              data-aria-nl="Mail over sponsoring €10.000"
+              data-aria-en="Email about €10,000 sponsorship">
+              <span class="lang-nl">€10.000</span>
+              <span class="lang-en">€10,000</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+          <p class="closer-pay-note">
+            <span class="lang-nl">
+              <strong>Factuur · betaling:</strong>&nbsp;<a class="donate-practical-mail" data-sponsor-mailto href="#">stuur één mail voor afstemming</a>.
+            </span>
+            <span class="lang-en">
+              <strong>Invoice · payment:</strong>&nbsp;<a class="donate-practical-mail" data-sponsor-mailto href="#">one email to coordinate</a>.
+            </span>
+          </p>
+        </div>
+
+        <div class="closer-contact-block">
+          <a class="closer-contact-mail"
+            href="mailto:Caesar.schoorl@gmail.com?subject=Back%20to%20Being%3A%20partner">Caesar.schoorl@gmail.com</a>
+          <a href="tel:+31683032377">+31&nbsp;6&nbsp;83032377</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav" aria-label="Slide navigatie">
+    <button id="prev" aria-label="Vorige slide">←</button>
+    <div class="dots" id="dots"></div>
+    <button id="next" aria-label="Volgende slide">→</button>
+  </nav>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    (function () {
+      var preloaderEl = document.getElementById('preloader');
+      var container = document.getElementById('preloader-lottie');
+      if (!preloaderEl || !container) return;
+
+      var DONE_CLASS = 'preloader--done';
+      var dismissed = false;
+      var startTime = Date.now();
+      var safetyTimer = window.setTimeout(dismissPreloader, 14000);
+
+      function dismissPreloader() {
+        if (dismissed) return;
+        dismissed = true;
+        window.clearTimeout(safetyTimer);
+        var elapsed = Date.now() - startTime;
+        var minVisible = 500;
+        var wait = elapsed < minVisible ? minVisible - elapsed : 0;
+        window.setTimeout(function () {
+          preloaderEl.classList.add(DONE_CLASS);
+          preloaderEl.setAttribute('aria-busy', 'false');
+          preloaderEl.setAttribute('aria-hidden', 'true');
+          preloaderEl.removeAttribute('role');
+        }, wait);
+      }
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        dismissPreloader();
+        return;
+      }
+
+      var Lottie = window.lottie || window.bodymovin;
+      if (!Lottie || typeof Lottie.loadAnimation !== 'function') {
+        window.addEventListener('load', dismissPreloader, { once: true });
+        return;
+      }
+
+      var animEnded = false;
+      var domLoaded = document.readyState === 'complete';
+
+      function checkBoth() {
+        if (!animEnded || !domLoaded) return;
+        dismissPreloader();
+      }
+
+      window.addEventListener('load', function () {
+        domLoaded = true;
+        checkBoth();
+      }, { once: true });
+      if (domLoaded) checkBoth();
+
+      var anim;
+      try {
+        anim = Lottie.loadAnimation({
+          container: container,
+          renderer: 'svg',
+          loop: false,
+          autoplay: true,
+          path: 'assets/lottie/b2b_loading_animation_screen_v16_optimized.json',
+        });
+      } catch (err) {
+        animEnded = true;
+        checkBoth();
+        return;
+      }
+
+      anim.addEventListener('complete', function () {
+        animEnded = true;
+        checkBoth();
+      });
+      anim.addEventListener('data_failed', function () {
+        animEnded = true;
+        checkBoth();
+      });
+    })();
+  </script>
+  <script>
+    (function () {
+      var LANG_KEY = 'btb-zonder-betalen-lang';
+
+      function wireDonateLinks() {
+        document.querySelectorAll('a[data-donate-eur]').forEach(function (a) {
+          var eur = parseInt(a.getAttribute('data-donate-eur'), 10);
+          var labelNl = eur === 1000 ? '€1.000' : eur === 5000 ? '€5.000' : '€10.000';
+          var labelEn = eur === 1000 ? 'EUR 1,000' : eur === 5000 ? 'EUR 5,000' : 'EUR 10,000';
+          var subj = encodeURIComponent('Back to Being — sponsoring ' + labelNl);
+          var body = encodeURIComponent(
+            '[NL]\r\n\r\n' +
+              'Ik wil sponsoring bespreken voor Back to Being.\r\n\r\n' +
+              'Gewenst indicatief niveau: ' +
+              labelNl +
+              '\r\n\r\n' +
+              'Organisatie / contactpersoon:\r\n...\r\n\r\n' +
+              'Factuur gewenst: ja / nee\r\n\r\n' +
+              'Korte toelichting (optioneel):\r\n...\r\n\r\n' +
+              '---\r\n\r\n' +
+              '[EN]\r\n\r\n' +
+              'I would like to discuss sponsorship for Back to Being.\r\n\r\n' +
+              'Indicative tier: ' +
+              labelEn +
+              '\r\n\r\n' +
+              'Organisation / contact:\r\n...\r\n\r\n' +
+              'Invoice needed: yes / no\r\n\r\n' +
+              'Short note (optional):\r\n...\r\n'
+          );
+          a.href = 'mailto:Caesar.schoorl@gmail.com?subject=' + subj + '&body=' + body;
+          a.removeAttribute('target');
+          a.removeAttribute('rel');
+        });
+      }
+
+      function wireSponsorMailtoAnchors() {
+        var mailBody =
+          '[NL]\r\n\r\n' +
+          'Back to Being — sponsoring (alle niveaus).\r\n\r\n' +
+          'Gewenst niveau of maatwerk: €1.000 / €5.000 / €10.000 / anders: _\r\n\r\n' +
+          'Organisatie + factuuradres:\r\n...\r\n\r\n' +
+          'Factuur gewenst: ja / nee\r\n\r\n' +
+          'Korte toelichting:\r\n...\r\n\r\n' +
+          '---\r\n\r\n' +
+          '[EN]\r\n\r\n' +
+          'Back to Being — sponsorship (all tiers).\r\n\r\n' +
+          'Preferred tier or custom: €1,000 / €5,000 / €10,000 / other: _\r\n\r\n' +
+          'Organisation + billing details:\r\n...\r\n\r\n' +
+          'Invoice needed: yes / no\r\n\r\n' +
+          'Short note:\r\n...\r\n\r\n';
+        var href =
+          'mailto:Caesar.schoorl@gmail.com?subject=' +
+          encodeURIComponent('Back to Being — sponsoring / factuur / invoice') +
+          '&body=' +
+          encodeURIComponent(mailBody);
+        document.querySelectorAll('a[data-sponsor-mailto]').forEach(function (a) {
+          a.href = href;
+        });
+      }
+
+      var langBtnNl = document.getElementById('lang-btn-nl');
+      var langBtnEn = document.getElementById('lang-btn-en');
+      var langBarRegion = document.getElementById('lang-bar-region');
+      var langSegmentGroup = document.getElementById('lang-segment-group');
+      var slideNav = document.querySelector('nav.nav');
+
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const total = slides.length;
+      var donateSlideIndex = slides.findIndex(function (s) {
+        return s.classList.contains('slide-donate');
+      });
+      const dotsContainer = document.getElementById('dots');
+      const prevBtn = document.getElementById('prev');
+      const nextBtn = document.getElementById('next');
+      let current = 0;
+
+      function applyLang(isEn) {
+        var root = document.documentElement;
+        if (isEn) {
+          root.classList.add('lang-en');
+          root.setAttribute('lang', 'en');
+        } else {
+          root.classList.remove('lang-en');
+          root.setAttribute('lang', 'nl');
+        }
+        document.title = isEn
+          ? 'Back to Being: The World as Our Office'
+          : 'Back to Being: De wereld als ons kantoor';
+        if (langBarRegion) langBarRegion.setAttribute('aria-label', isEn ? 'Language' : 'Taal');
+        if (langSegmentGroup) langSegmentGroup.setAttribute('aria-label', isEn ? 'Choose language' : 'Kies taal');
+        if (langBtnNl) langBtnNl.setAttribute('aria-pressed', isEn ? 'false' : 'true');
+        if (langBtnEn) langBtnEn.setAttribute('aria-pressed', isEn ? 'true' : 'false');
+        if (slideNav) slideNav.setAttribute('aria-label', isEn ? 'Slide navigation' : 'Slide navigatie');
+        if (prevBtn) prevBtn.setAttribute('aria-label', isEn ? 'Previous slide' : 'Vorige slide');
+        if (nextBtn) nextBtn.setAttribute('aria-label', isEn ? 'Next slide' : 'Volgende slide');
+
+        var dots = dotsContainer ? dotsContainer.querySelectorAll('.dot') : [];
+        dots.forEach(function (dot, i) {
+          dot.setAttribute('aria-label', isEn ? ('Go to slide ' + (i + 1)) : ('Ga naar slide ' + (i + 1)));
+        });
+
+        document.querySelectorAll('[data-aria-nl][data-aria-en]').forEach(function (el) {
+          var nl = el.getAttribute('data-aria-nl');
+          var en = el.getAttribute('data-aria-en');
+          if (nl && en) el.setAttribute('aria-label', isEn ? en : nl);
+        });
+
+        try {
+          localStorage.setItem(LANG_KEY, isEn ? 'en' : 'nl');
+        } catch (err) {}
+      }
+
+      slides.forEach((slide, i) => {
+        const dot = document.createElement('button');
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', `Ga naar slide ${i + 1}`);
+        if (i === 0) dot.setAttribute('aria-current', 'true');
+        dot.addEventListener('click', () => go(i));
+        dotsContainer.appendChild(dot);
+        slide.setAttribute('aria-hidden', i === 0 ? 'false' : 'true');
+      });
+
+      var initialEn = false;
+      try {
+        initialEn = localStorage.getItem(LANG_KEY) === 'en';
+      } catch (err) {}
+      applyLang(initialEn);
+      wireDonateLinks();
+      wireSponsorMailtoAnchors();
+
+      if (langBtnNl) langBtnNl.addEventListener('click', function () { applyLang(false); });
+      if (langBtnEn) langBtnEn.addEventListener('click', function () { applyLang(true); });
+
+      function go(i) {
+        if (i < 0 || i >= total) return;
+        slides[current].classList.remove('active');
+        slides[current].setAttribute('aria-hidden', 'true');
+        dotsContainer.children[current].classList.remove('active');
+        dotsContainer.children[current].removeAttribute('aria-current');
+        current = i;
+        slides[current].classList.add('active');
+        slides[current].setAttribute('aria-hidden', 'false');
+        dotsContainer.children[current].classList.add('active');
+        dotsContainer.children[current].setAttribute('aria-current', 'true');
+        prevBtn.disabled = current === 0;
+        nextBtn.disabled = current === total - 1;
+      }
+
+      prevBtn.addEventListener('click', () => go(current - 1));
+      nextBtn.addEventListener('click', () => go(current + 1));
+
+      document.addEventListener('keydown', (e) => {
+        const tag = (e.target && e.target.tagName) || '';
+        const isInteractive = tag === 'A' || tag === 'BUTTON' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+        if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(current + 1); }
+        else if (e.key === ' ' && !isInteractive) { e.preventDefault(); go(current + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(current - 1); }
+        else if (e.key === 'Home') { go(0); }
+        else if (e.key === 'End') { go(total - 1); }
+      });
+
+      let touchStartX = 0;
+      document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+      document.addEventListener('touchend', (e) => {
+        const dx = e.changedTouches[0].screenX - touchStartX;
+        if (Math.abs(dx) > 50) go(dx < 0 ? current + 1 : current - 1);
+      });
+
+      prevBtn.disabled = true;
+
+      ['cta-wat-doen-next', 'cta-waarom-next', 'cta-partners-next', 'cta-recap-next', 'cta-donate-next'].forEach(function (buttonId) {
+        var btn = document.getElementById(buttonId);
+        if (!btn) return;
+        btn.addEventListener('click', function () {
+          if (buttonId === 'cta-partners-next' && donateSlideIndex >= 0) {
+            go(donateSlideIndex);
+            return;
+          }
+          var sec = btn.closest('.slide');
+          var idx = sec ? slides.indexOf(sec) : -1;
+          if (idx >= 0 && idx < total - 1) go(idx + 1);
+        });
+      });
+
+      // Auto-hide navigation pill after 1s of inactivity
+      var navEl = document.querySelector('.nav');
+      var idleTimer = null;
+      function showNav() {
+        if (!navEl) return;
+        navEl.classList.remove('idle');
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(function () {
+          navEl.classList.add('idle');
+        }, 1000);
+      }
+      ['mousemove', 'keydown', 'touchstart', 'click', 'wheel'].forEach(function (ev) {
+        document.addEventListener(ev, showNav, { passive: true });
+      });
+      showNav();
+    })();
+  </script>
+</body>
+</html>
