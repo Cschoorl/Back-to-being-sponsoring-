@@ -1,6 +1,6 @@
 # Back to Being — sponsoring (zonder betaalpagina)
 
-Statische **sponsor-deck** (7 slides): zelfde verhaal als [met-bedragen op de hoofdsite](https://cschoorl.github.io/Back-to-Being/met-bedragen.html), maar **zonder bunq/checkout** en **zonder** de tussenpagina met drie sponsoringskaarten. Op de laatste slide staan nog wel snelle **mailto**-knoppen per bedrag (€1k / €5k / €10k).
+Statische **sponsor-deck** (7 slides): zelfde verhaal als [met-bedragen op de hoofdsite](https://cschoorl.github.io/Back-to-Being/met-bedragen.html), maar **zonder bunq/checkout**, zonder de sponsoringskaartenpagina en zonder bedrag-knoppen op de contactslide—alleen titel, slotregel, e-mail en telefoon.
 
 ## Live bekijken
 

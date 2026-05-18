@@ -1357,86 +1357,6 @@
 
     .slide.dark .signature { color: rgba(247, 245, 240, 0.55); }
 
-    .donate-pay-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      gap: 0.45rem;
-      padding: 0.82rem 1.1rem;
-      border-radius: 100px;
-      background: var(--tree);
-      color: var(--cream);
-      font-family: var(--font-sub);
-      font-size: clamp(0.82rem, 1.05vw, 0.9rem);
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-decoration: none;
-      transition: background 0.2s ease, transform 0.2s ease;
-      border: none;
-      cursor: pointer;
-    }
-
-    .donate-pay-link:hover {
-      background: var(--creek);
-      color: var(--canvas);
-      transform: translateY(-1px);
-    }
-
-    .donate-practical-mail {
-      display: inline;
-      font-weight: 600;
-      color: var(--creek);
-      text-decoration: underline;
-      text-underline-offset: 0.12em;
-    }
-
-    .donate-practical-mail:hover {
-      color: var(--tree);
-    }
-
-    .closer-pay-note {
-      font-family: var(--font-sub);
-      font-size: clamp(0.72rem, 0.88vw, 0.81rem);
-      color: var(--ink-soft);
-      line-height: 1.52;
-      margin-top: 0.85rem;
-      text-align: left;
-      max-width: 44ch;
-    }
-
-    .closer-pay-note strong {
-      color: var(--tree);
-      font-weight: 600;
-    }
-
-    .closer-pay-wrap {
-      width: 100%;
-      margin: 0 0 clamp(1.25rem, 2.75vh, 2rem);
-      max-width: min(48rem, 96vw);
-    }
-
-    .closer-pay-kicker {
-      font-family: var(--font-sub);
-      font-size: clamp(0.88rem, 1.15vw, 1rem);
-      font-weight: 600;
-      color: var(--tree);
-      margin: 0 0 0.65rem;
-      line-height: 1.4;
-    }
-
-    .closer-pay-strip {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.55rem;
-      align-items: center;
-    }
-
-    .donate-pay-link--compact {
-      padding: 0.62rem 0.95rem;
-      font-size: clamp(0.76rem, 0.95vw, 0.84rem);
-    }
-
     /* ---------- CONTACT / CLOSER ---------- */
     .slide.closer {
       justify-content: space-between;
@@ -2140,43 +2060,6 @@
           </span>
         </p>
 
-        <div class="closer-pay-wrap">
-          <p class="closer-pay-kicker">
-            <span class="lang-nl">Klaar om mee te lopen? Mail ons met je gewenste niveau of stel eerst je vraag.</span>
-            <span class="lang-en">Ready to walk with us? Email your preferred tier—or ask a question first.</span>
-          </p>
-          <div class="closer-pay-strip" role="group" data-aria-nl="Snel mailen: drie sponsoringsniveaus" data-aria-en="Quick email: three sponsorship tiers">
-            <a class="donate-pay-link donate-pay-link--compact" href="#" data-donate-eur="1000"
-              data-aria-nl="Mail over sponsoring €1.000"
-              data-aria-en="Email about €1,000 sponsorship">
-              <span class="lang-nl">€1.000</span>
-              <span class="lang-en">€1,000</span>
-              <span aria-hidden="true">↗</span>
-            </a>
-            <a class="donate-pay-link donate-pay-link--compact" href="#" data-donate-eur="5000"
-              data-aria-nl="Mail over sponsoring €5.000"
-              data-aria-en="Email about €5,000 sponsorship">
-              <span class="lang-nl">€5.000</span>
-              <span class="lang-en">€5,000</span>
-              <span aria-hidden="true">↗</span>
-            </a>
-            <a class="donate-pay-link donate-pay-link--compact" href="#" data-donate-eur="10000"
-              data-aria-nl="Mail over sponsoring €10.000"
-              data-aria-en="Email about €10,000 sponsorship">
-              <span class="lang-nl">€10.000</span>
-              <span class="lang-en">€10,000</span>
-              <span aria-hidden="true">↗</span>
-            </a>
-          </div>
-          <p class="closer-pay-note">
-            <span class="lang-nl">
-              <strong>Factuur · betaling:</strong>&nbsp;<a class="donate-practical-mail" data-sponsor-mailto href="#">stuur één mail voor afstemming</a>.
-            </span>
-            <span class="lang-en">
-              <strong>Invoice · payment:</strong>&nbsp;<a class="donate-practical-mail" data-sponsor-mailto href="#">one email to coordinate</a>.
-            </span>
-          </p>
-        </div>
 
         <div class="closer-contact-block">
           <a class="closer-contact-mail"
@@ -2276,62 +2159,6 @@
     (function () {
       var LANG_KEY = 'btb-zonder-betalen-lang';
 
-      function wireDonateLinks() {
-        document.querySelectorAll('a[data-donate-eur]').forEach(function (a) {
-          var eur = parseInt(a.getAttribute('data-donate-eur'), 10);
-          var labelNl = eur === 1000 ? '€1.000' : eur === 5000 ? '€5.000' : '€10.000';
-          var labelEn = eur === 1000 ? 'EUR 1,000' : eur === 5000 ? 'EUR 5,000' : 'EUR 10,000';
-          var subj = encodeURIComponent('Back to Being — sponsoring ' + labelNl);
-          var body = encodeURIComponent(
-            '[NL]\r\n\r\n' +
-              'Ik wil sponsoring bespreken voor Back to Being.\r\n\r\n' +
-              'Gewenst indicatief niveau: ' +
-              labelNl +
-              '\r\n\r\n' +
-              'Organisatie / contactpersoon:\r\n...\r\n\r\n' +
-              'Factuur gewenst: ja / nee\r\n\r\n' +
-              'Korte toelichting (optioneel):\r\n...\r\n\r\n' +
-              '---\r\n\r\n' +
-              '[EN]\r\n\r\n' +
-              'I would like to discuss sponsorship for Back to Being.\r\n\r\n' +
-              'Indicative tier: ' +
-              labelEn +
-              '\r\n\r\n' +
-              'Organisation / contact:\r\n...\r\n\r\n' +
-              'Invoice needed: yes / no\r\n\r\n' +
-              'Short note (optional):\r\n...\r\n'
-          );
-          a.href = 'mailto:Caesar.schoorl@gmail.com?subject=' + subj + '&body=' + body;
-          a.removeAttribute('target');
-          a.removeAttribute('rel');
-        });
-      }
-
-      function wireSponsorMailtoAnchors() {
-        var mailBody =
-          '[NL]\r\n\r\n' +
-          'Back to Being — sponsoring (alle niveaus).\r\n\r\n' +
-          'Gewenst niveau of maatwerk: €1.000 / €5.000 / €10.000 / anders: _\r\n\r\n' +
-          'Organisatie + factuuradres:\r\n...\r\n\r\n' +
-          'Factuur gewenst: ja / nee\r\n\r\n' +
-          'Korte toelichting:\r\n...\r\n\r\n' +
-          '---\r\n\r\n' +
-          '[EN]\r\n\r\n' +
-          'Back to Being — sponsorship (all tiers).\r\n\r\n' +
-          'Preferred tier or custom: €1,000 / €5,000 / €10,000 / other: _\r\n\r\n' +
-          'Organisation + billing details:\r\n...\r\n\r\n' +
-          'Invoice needed: yes / no\r\n\r\n' +
-          'Short note:\r\n...\r\n\r\n';
-        var href =
-          'mailto:Caesar.schoorl@gmail.com?subject=' +
-          encodeURIComponent('Back to Being — sponsoring / factuur / invoice') +
-          '&body=' +
-          encodeURIComponent(mailBody);
-        document.querySelectorAll('a[data-sponsor-mailto]').forEach(function (a) {
-          a.href = href;
-        });
-      }
-
       var langBtnNl = document.getElementById('lang-btn-nl');
       var langBtnEn = document.getElementById('lang-btn-en');
       var langBarRegion = document.getElementById('lang-bar-region');
@@ -2396,8 +2223,6 @@
         initialEn = localStorage.getItem(LANG_KEY) === 'en';
       } catch (err) {}
       applyLang(initialEn);
-      wireDonateLinks();
-      wireSponsorMailtoAnchors();
 
       if (langBtnNl) langBtnNl.addEventListener('click', function () { applyLang(false); });
       if (langBtnEn) langBtnEn.addEventListener('click', function () { applyLang(true); });
